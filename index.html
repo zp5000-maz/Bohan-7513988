@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>博瀚 AI 英語 V55.9.5 智能滾動版</title>
+    <title>博瀚 AI 英語 V55.9.6 最終優化版</title>
     <style>
         :root { --primary: #00d4ff; --gold: #ffc107; --bg: #050505; --card: #111; --success: #00ffbb; --warning: #ffc107; --danger: #ff4444; }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; -webkit-tap-highlight-color: transparent; }
@@ -28,7 +28,7 @@
         
         #fw-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; display: none; }
         
-        /* 滾動區域設定：支援平滑滾動 */
+        /* 滾動區域：支援平滑滾動並預留網址列空間 */
         .content-scroll { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-top: 60px; scroll-behavior: smooth; }
         
         .hidden { display: none !important; }
@@ -60,7 +60,7 @@
             <img src="bohan_logo.png" class="logo-img" alt="博瀚Logo" onerror="this.style.display='none'">
         </div>
         <h2 style="color:var(--primary); margin-top: 15px; letter-spacing: 2px;">博瀚 AI 英語系統</h2>
-        <p style="color:rgba(255,255,255,0.4); margin-top: -10px; font-size: 12px;">V55.9.5 智能滾動版</p>
+        <p style="color:rgba(255,255,255,0.4); margin-top: -10px; font-size: 12px;">V55.9.6 智能滾動優化版</p>
         <input type="text" id="user" class="login-input" placeholder="學生姓名">
         <input type="password" id="pass" class="login-input" placeholder="密碼">
         <div id="loading-zone">
@@ -147,7 +147,7 @@
         document.getElementById('s-q').innerText = "0";
         document.getElementById('next-btn').disabled = true;
         latestResult = ""; audioBlob = null;
-        document.getElementById('scroller').scrollTop = 0; // 重置滾動位置
+        document.getElementById('scroller').scrollTop = 0; 
         resetPlayState();
     }
 
@@ -166,7 +166,6 @@
                 if(ws[idx]) {
                     const currentWordEl = ws[idx];
                     currentWordEl.classList.add('active'); 
-                    // --- 智能自動滾動邏輯 ---
                     currentWordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     idx++; 
                 }
@@ -282,6 +281,7 @@
     }
 
     function showFinalSuccessUI() {
+        window.speechSynthesis.cancel(); // 確保停止所有語音排隊
         document.getElementById('main-ui').innerHTML = `
             <div style="margin-top:100px; padding: 20px;">
                 <div style="font-size: 80px; margin-bottom: 20px; animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);">🏆</div>
@@ -290,12 +290,14 @@
                 <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 40px; width: 220px;">回主畫面</button>
             </div>
         `;
+        // 延時念出結算語，確保畫面已渲染且語音引擎準備就緒
         setTimeout(() => {
-            window.speechSynthesis.cancel();
             const ut = new SpeechSynthesisUtterance("Congratulation, Mission completed!");
-            ut.lang = 'en-US'; ut.rate = 0.8;
+            ut.lang = 'en-US';
+            ut.rate = 0.8;
+            ut.pitch = 1.1; 
             window.speechSynthesis.speak(ut);
-        }, 200);
+        }, 500);
     }
 
     function fastNext() {
