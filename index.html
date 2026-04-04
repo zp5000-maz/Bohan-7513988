@@ -2,41 +2,39 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>博瀚 AI 英語 V6.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>博瀚 AI 英語 V6.1</title>
     <style>
-        :root { --primary: #00d4ff; --gold: #ffc107; --bg: #050505; --card: #111; --success: #00ffbb; --warning: #ffc107; --danger: #ff4444; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .card { background: rgba(17, 17, 17, 0.95); padding: 20px; border-radius: 30px; width: 92%; max-width: 440px; height: 92vh; display: flex; flex-direction: column; text-align: center; border: 1px solid #00d4ff44; position: relative; box-sizing: border-box; }
-        #ktv-box { font-size: 28px; font-weight: 800; margin: 20px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-        .word { color: var(--gold); } .word.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-        #total-score { font-size: 80px; font-weight: 900; margin: 10px 0; }
-        .btn { width: 100%; padding: 16px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3; margin-top: 10px; }
-        .btn-primary { background: linear-gradient(135deg, #00d4ff, #0080ff); color: #000; }
-        .btn-primary:disabled { background: #444; color: #888; }
+        :root { --primary: #00d4ff; --bg: #0a0a0a; --success: #00ffbb; --warning: #ffc107; --danger: #ff4444; }
+        body { font-family: sans-serif; background: var(--bg); color: #fff; margin: 0; text-align: center; overflow: hidden; }
+        .card { width: 90%; max-width: 400px; margin: 5vh auto; background: #111; padding: 20px; border-radius: 25px; border: 1px solid #333; height: 90vh; display: flex; flex-direction: column; }
+        #ktv-box { font-size: 26px; font-weight: bold; color: #ffc107; min-height: 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 10px; margin-top: 20px; }
+        #total-score { font-size: 80px; font-weight: 900; margin: 20px 0; color: var(--success); }
+        #wave { width: 100%; height: 80px; background: #000; border-radius: 15px; }
+        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .btn-primary { background: var(--primary); color: #000; }
         .btn-dark { background: #222; color: #fff; border: 1px solid #444; }
-        #toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.4s; background: rgba(0,0,0,0.9); padding: 30px; border-radius: 30px; border: 3px solid var(--primary); }
-        #toast.show { opacity: 1; }
+        #toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(0,0,0,0.95); border: 2px solid var(--primary); padding: 40px; border-radius: 30px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 999; }
+        #toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         .hidden { display: none !important; }
     </style>
 </head>
-<body onclick="wakeAudioContext()">
-    <div id="toast"><div id="t-icon" style="font-size:60px;"></div><div id="t-text" style="font-size:20px; font-weight:bold;"></div></div>
+<body onclick="initAudio()">
+    <div id="toast"><div id="t-icon" style="font-size:80px;"></div><div id="t-text" style="font-size:24px; margin-top:10px;"></div></div>
     
     <div class="card">
         <div id="login-ui">
-            <h2 style="color:var(--primary);">博瀚 AI 英語系統</h2>
-            <input type="text" id="user" placeholder="學生姓名" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; text-align:center;">
-            <input type="password" id="pass" placeholder="密碼" style="width:100%; padding:15px; margin-bottom:20px; border-radius:10px; border:none; text-align:center;">
+            <h2>博瀚 AI 英語系統V6.1</h2>
+            <input type="text" id="user" placeholder="姓名" style="width:80%; padding:10px; margin:5px;"><br>
+            <input type="password" id="pass" placeholder="密碼" style="width:80%; padding:10px; margin:5px;"><br>
             <button class="btn btn-primary" onclick="handleLogin()">進入學習</button>
         </div>
 
         <div id="main-ui" class="hidden">
             <div id="ktv-box">載入中...</div>
-            <div id="chi-box" style="opacity:0.6; margin-bottom:20px;"></div>
             <div id="total-score">0</div>
-            <canvas id="wave" style="width:100%; height:60px; background:#000; border-radius:10px; margin-bottom:15px;"></canvas>
-            <div style="display:flex; gap:10px;">
+            <canvas id="wave"></canvas>
+            <div style="display:flex; gap:10px; margin-top:10px;">
                 <button id="play-btn" class="btn btn-dark" style="flex:1" onclick="handlePlay()">🔊 聽範例</button>
                 <button id="rec-btn" class="btn btn-dark" style="flex:2; color:var(--success);" onclick="toggleRec()">🎙️ 按我錄音</button>
             </div>
@@ -45,13 +43,13 @@
     </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbwLm3aY7sfU4sb3CJTThDiOwtQB2cPmjP7_MLNWuvLcJu-su0znbMjattQ-ULsbjn2PRA/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbxiT11zx5QVC0T7_ihfs5p785NkzokRRDBGxjDSG6219f5Lr3Low23xlGHG11TzrM1CeA/exec";
     let db = { users:[], questions:[] }, stu = "", cur = 0, isRec = false, audioBlob = null;
-    let audioCtx, ana, stream, isPlaying = false;
+    let audioCtx, ana, stream;
 
-    async function wakeAudioContext() {
+    function initAudio() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
     async function init() {
@@ -60,85 +58,97 @@
     window.onload = init;
 
     function handleLogin() {
-        const u = document.getElementById('user').value.trim(), p = document.getElementById('pass').value.trim();
-        const found = db.users.find(x => String(x[0]) === u && String(x[1]) === p);
-        if(!found) { alert("驗證失敗"); return; }
+        const u = document.getElementById('user').value, p = document.getElementById('pass').value;
+        const found = db.users.find(x => x[0] == u && x[1] == p);
+        if(!found) return alert("登入失敗");
         stu = u; document.getElementById('login-ui').classList.add('hidden'); document.getElementById('main-ui').classList.remove('hidden'); renderQ();
     }
 
     function renderQ() {
-        if (cur >= db.questions.length) { showFinal(); return; }
-        const q = db.questions[cur];
-        document.getElementById('ktv-box').innerHTML = q.eng.split(" ").map((w, i) => `<span class="word" id="w-${i}">${w}</span>`).join(" ");
-        document.getElementById('chi-box').innerText = q.chi;
+        if (cur >= db.questions.length) { document.getElementById('main-ui').innerHTML="<h1>🏆 功課完成！</h1>"; return; }
+        document.getElementById('ktv-box').innerText = db.questions[cur].eng;
         document.getElementById('total-score').innerText = "0";
         document.getElementById('next-btn').disabled = true;
     }
 
     function drawWave() {
-        if (!isRec || !ana) return; const cvs = document.getElementById('wave'), c = cvs.getContext('2d');
-        cvs.width = cvs.offsetWidth; cvs.height = cvs.offsetHeight;
+        const cvs = document.getElementById('wave'), c = cvs.getContext('2d');
         const data = new Uint8Array(ana.frequencyBinCount);
-        const render = () => { if (!isRec) return; requestAnimationFrame(render); ana.getByteFrequencyData(data);
-            c.fillStyle = '#000'; c.fillRect(0, 0, cvs.width, cvs.height);
-            for (let i = 0; i < 20; i++) { const h = (data[i] / 255) * cvs.height * 2; c.fillStyle = `hsl(${i * 18 + 180}, 100%, 60%)`; c.fillRect(i * (cvs.width/20), cvs.height - h, (cvs.width/20) - 2, h); }
-        }; render();
+        function loop() {
+            if (!isRec) { c.clearRect(0,0,cvs.width,cvs.height); return; }
+            requestAnimationFrame(loop);
+            ana.getByteFrequencyData(data);
+            cvs.width = cvs.offsetWidth; cvs.height = cvs.offsetHeight;
+            c.fillStyle = '#000'; c.fillRect(0,0,cvs.width,cvs.height);
+            for (let i = 0; i < 30; i++) {
+                let h = (data[i] / 255) * cvs.height * 1.5;
+                c.fillStyle = `hsl(${i*12+180}, 100%, 60%)`;
+                c.fillRect(i* (cvs.width/30), cvs.height-h, (cvs.width/30)-2, h);
+            }
+        }
+        loop();
     }
 
     async function toggleRec() {
-        await wakeAudioContext(); 
+        initAudio();
         if (!isRec) {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             ana = audioCtx.createAnalyser(); ana.fftSize = 64;
             audioCtx.createMediaStreamSource(stream).connect(ana);
-            drawWave();
-            const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' }); 
+            isRec = true; drawWave();
+            const mr = new MediaRecorder(stream); 
             let chunks = [];
             mr.ondataavailable = e => chunks.push(e.data);
             mr.onstop = async () => {
                 audioBlob = new Blob(chunks, { type: 'audio/webm' });
-                document.getElementById('rec-btn').innerText = "⏳ AI 評分中...";
-                await sendToGemini();
+                document.getElementById('rec-btn').innerText = "⏳ 評分中...";
+                sendToAI();
             };
-            mr.start(); window.currentMR = mr; isRec = true;
-            document.getElementById('rec-btn').innerText = "⏹ 停止錄音"; document.getElementById('rec-btn').style.color = "var(--danger)";
+            mr.start(); window.currentMR = mr;
+            document.getElementById('rec-btn').innerText = "⏹ 停止錄音";
         } else {
-            isRec = false; if (window.currentMR) window.currentMR.stop();
+            isRec = false; window.currentMR.stop();
             stream.getTracks().forEach(t => t.stop());
-            document.getElementById('rec-btn').innerText = "🎙️ 按我錄音"; document.getElementById('rec-btn').style.color = "var(--success)";
+            document.getElementById('rec-btn').innerText = "🎙️ 按我錄音";
         }
     }
 
-    async function sendToGemini() {
-        if (!audioBlob || audioBlob.size < 500) { showFeedback(0); return; }
-        let base64Audio = ""; const reader = new FileReader(); reader.readAsDataURL(audioBlob);
-        await new Promise(res => { reader.onloadend = () => { base64Audio = reader.result.split(',')[1]; res(); }; });
-
-        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ student: stu, eng: db.questions[cur].eng, audio: base64Audio }) });
-        const res = await r.json();
-        const score = res.score;
-        document.getElementById('total-score').innerText = score;
-        showFeedback(score);
-        document.getElementById('next-btn').disabled = false;
+    async function sendToAI() {
+        let reader = new FileReader(); reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+            let base64 = reader.result.split(',')[1];
+            const r = await fetch(API, { method: 'POST', body: JSON.stringify({ student: stu, eng: db.questions[cur].eng, audio: base64 }) });
+            const res = await r.json();
+            document.getElementById('total-score').innerText = res.score;
+            showFeedback(res.score);
+            document.getElementById('next-btn').disabled = false;
+            document.getElementById('rec-btn').innerText = "🎙️ 重新錄音";
+        };
     }
 
-    function showFeedback(score) {
-        let icon, text, color;
-        if (score >= 90) { icon = "👑"; text = "太厲害了，好棒棒！"; color = "var(--success)"; }
-        else if (score >= 60) { icon = "👍"; text = "還不錯喔，再加油。"; color = "var(--warning)"; }
-        else if (score > 0) { icon = "😤"; text = "請認真學習。"; color = "var(--danger)"; }
-        else { icon = "❓"; text = "沒聽到聲音喔。"; color = "#aaa"; }
-
-        const t = document.getElementById('toast');
-        document.getElementById('t-icon').innerText = icon; document.getElementById('t-text').innerText = text;
-        t.style.borderColor = color; t.classList.add('show');
+    function showFeedback(s) {
+        let icon = "😤", text = "請認真學習。";
+        if(s >= 90) { icon="👑"; text="太厲害了，好棒棒！"; }
+        else if(s >= 60) { icon="👍"; text="還不錯喔，再加油。"; }
+        else if(s == 0) { icon="❓"; text="沒聽到聲音喔。"; }
         
-        const ut = new SpeechSynthesisUtterance(text); ut.lang = 'zh-TW'; window.speechSynthesis.speak(ut);
-        setTimeout(() => t.classList.remove('show'), 2500);
+        document.getElementById('t-icon').innerText = icon;
+        document.getElementById('t-text').innerText = text;
+        document.getElementById('toast').classList.add('show');
+
+        // 中文語音回饋
+        const ut = new SpeechSynthesisUtterance(text);
+        ut.lang = 'zh-TW';
+        window.speechSynthesis.speak(ut);
+
+        setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
     }
 
     function fastNext() { cur++; renderQ(); }
-    function showFinal() { document.getElementById('main-ui').innerHTML = "<h1>🏆 功課完成！</h1><button class='btn btn-primary' onclick='location.reload()'>回主畫面</button>"; }
+    function handlePlay() { 
+        const ut = new SpeechSynthesisUtterance(db.questions[cur].eng);
+        ut.lang = 'en-US'; window.speechSynthesis.speak(ut);
+    }
 </script>
 </body>
 </html>
