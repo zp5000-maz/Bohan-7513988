@@ -9,9 +9,10 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .card { background: #111; padding: 30px 25px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .hidden { display: none !important; }
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; margin-top: 12px; cursor: pointer; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; margin-top: 12px; cursor: pointer; transition: 0.2s; }
         .btn-p { background: var(--primary); color: #000; }
         .btn-d { background: #222; color: #fff; border: 1px solid #444; }
+        .btn:active { opacity: 0.8; transform: scale(0.98); }
         input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; text-align: center; box-sizing: border-box; font-size: 16px; }
         #wave { width: 100%; height: 50px; background: #000; border-radius: 10px; margin: 15px 0; border: 1px solid #222; }
     </style>
@@ -20,7 +21,7 @@
 
 <div class="card">
     <div id="login-ui">
-        <h2 style="color:var(--primary)">博瀚 AI </h2>
+        <h2 style="color:var(--primary)">博瀚 AI 英語</h2>
         <input type="text" id="user" placeholder="學生姓名">
         <input type="password" id="pass" placeholder="密碼">
         <button class="btn btn-p" onclick="doLogin()">進入學習</button>
@@ -38,7 +39,7 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbxtAj2GYSRPuV3To3OYMYtoTgCTJguKYW2KDNEB7B_fhodFC-KsUYxwZOzAZgheX9qQ9A/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbzea5griEMTiZTyYyV3q8bljTNQHDvWG6mSpprdhNxDXcnkb2sx-BzaLsuagEY1jgGQCQ/exec"; 
     let db, stu, cur=0, isRec=false, mr, chunks=[], audioCtx, ana, aniId;
 
     window.onload = async () => { try { const r = await fetch(API); db = await r.json(); } catch(e) {} };
@@ -63,7 +64,7 @@
     function sayIt() {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(db.questions[cur].eng);
-        u.lang = 'en-US'; window.speechSynthesis.speak(u);
+        u.lang = 'en-US'; u.rate = 0.9; window.speechSynthesis.speak(u);
     }
 
     function draw() {
@@ -92,36 +93,51 @@
 
                 mr = new MediaRecorder(s);
                 chunks = [];
-                mr.ondataavailable = e => chunks.push(e.data);
+                mr.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 mr.onstop = async () => {
                     const blob = new Blob(chunks, { type: 'audio/mp4' });
                     const reader = new FileReader();
                     reader.readAsDataURL(blob);
                     reader.onloadend = async () => {
+                        // 【終極修正】移除 Base64 的標頭，只傳純數據
                         const base64 = reader.result.split(',')[1];
                         document.getElementById('rec-btn').innerText = "🤖 辨識中...";
-                        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'recognize', audio: base64 }) });
-                        const res = await r.json();
-                        handleResult(res.transcript);
+                        try {
+                            const r = await fetch(API, { 
+                                method: 'POST', 
+                                body: JSON.stringify({ action: 'recognize', audio: base64 }) 
+                            });
+                            const res = await r.json();
+                            handleResult(res.transcript);
+                        } catch (err) {
+                            alert("系統繁忙，請再試一次！");
+                            resetBtn();
+                        }
                     };
                     s.getTracks().forEach(t => t.stop());
                 };
                 mr.start(); isRec = true; draw();
                 document.getElementById('rec-btn').innerText = "⏹ 停止錄音";
                 document.getElementById('rec-btn').style.color = "var(--danger)";
-            } catch (e) { alert("無法存取麥克風"); }
+            } catch (e) { alert("請允許使用麥克風！"); }
         } else {
             isRec = false; cancelAnimationFrame(aniId); mr.stop();
             document.getElementById('rec-btn').disabled = true;
         }
     }
 
-    function handleResult(txt) {
+    function resetBtn() {
         document.getElementById('rec-btn').disabled = false;
         document.getElementById('rec-btn').innerText = "🎙️ 按我錄音";
         document.getElementById('rec-btn').style.color = "var(--success)";
-        
-        if (!txt || txt === "EMPTY") { alert("沒聽到聲音喔！"); return; }
+    }
+
+    function handleResult(txt) {
+        resetBtn();
+        if (!txt || txt === "EMPTY" || txt.startsWith("ERROR")) { 
+            alert("沒聽到聲音喔，請大聲一點再試一次！"); 
+            return; 
+        }
         
         const target = db.questions[cur].eng.toLowerCase().replace(/[.,!?]/g,"").split(" ");
         const spoken = txt.toLowerCase().replace(/[.,!?]/g,"").split(" ");
@@ -140,7 +156,7 @@
     function nextQ() {
         fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ student: stu, eng: db.questions[cur].eng, score: document.getElementById('score').innerText, recognizedText: window.lastTxt }) });
         if (cur < db.questions.length - 1) { cur++; showQ(); }
-        else { alert("全部練習完囉！"); location.reload(); }
+        else { alert("全部題目練習完囉！"); location.reload(); }
     }
 </script>
 </body>
