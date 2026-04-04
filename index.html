@@ -20,7 +20,7 @@
 
 <div class="card">
     <div id="login-ui">
-        <h2 style="color:var(--primary)">博瀚英語ｏ</h2>
+        <h2 style="color:var(--primary)">博瀚英</h2>
         <input type="text" id="user" placeholder="學生姓名">
         <input type="password" id="pass" placeholder="密碼">
         <button class="btn btn-p" onclick="doLogin()">進入學習</button>
@@ -38,7 +38,7 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbwEIggCAVMTWwdVQkgeduw_Gu-RxsrAXGEL04kKJQw_xNq9xN-Zwx_8Ob8DmgQlzO_goA/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbw9e5YMUaLp7fpDZToztXXHgevodENG-1NYtoZRZV4CWoVf8zOVd94PD8SKgNBA-rXl9A/exec"; 
     let db={users:[],questions:[]}, stu="", cur=0, isRec=false, mr, chunks=[], audioCtx, ana, aniId;
 
     window.onload = async () => { try { const r = await fetch(API); db = await r.json(); } catch(e) {} };
