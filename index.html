@@ -3,43 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>博瀚 AI 英語 V56.2</title>
+    <title>博瀚 AI 英語 V56.3</title>
     <style>
-        :root { --primary: #00d4ff; --bg: #050505; --success: #00ffbb; --danger: #ff4444; }
-        body { font-family: sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .card { background: #111; padding: 25px; border-radius: 25px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #333; }
+        :root { --primary: #00d4ff; --gold: #ffc107; --bg: #050505; --success: #00ffbb; --danger: #ff4444; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .card { background: #111; padding: 25px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .hidden { display: none !important; }
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; margin-top: 12px; cursor: pointer; transition: 0.2s; }
         .btn-p { background: var(--primary); color: #000; }
         .btn-d { background: #222; color: #fff; border: 1px solid #444; }
-        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; text-align: center; box-sizing: border-box; }
-        #wave { width: 100%; height: 60px; background: #000; border-radius: 10px; margin-bottom: 10px; border: 1px solid #333; }
+        input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; text-align: center; box-sizing: border-box; font-size: 18px; }
+        #wave { width: 100%; height: 70px; background: #000; border-radius: 15px; margin: 15px 0; border: 1px solid #333; }
+        #score { font-size: 70px; font-weight: 900; color: var(--success); margin: 10px 0; }
     </style>
 </head>
 <body>
+
 <div class="card">
     <div id="login-ui">
-        <h2 style="color:var(--primary)">博瀚 AI 英語V56.2</h2>
-        <input type="text" id="user" placeholder="學生姓名">
-        <input type="password" id="pass" placeholder="密碼">
-        <button class="btn btn-p" onclick="doLogin()">進入學習</button>
+        <h2 style="color:var(--primary); margin-bottom:20px;">博瀚 AI 英語</h2>
+        <input type="text" id="user" placeholder="學生姓名" autocomplete="off">
+        <input type="password" id="pass" placeholder="密碼" autocomplete="off">
+        <button class="btn btn-p" onclick="doLogin()">進入學習系統</button>
     </div>
+
     <div id="main-ui" class="hidden">
-        <div id="q-eng" style="font-size: 24px; color: #ffc107; font-weight: bold; margin-bottom: 10px;"></div>
-        <div id="q-chi" style="opacity: 0.7; margin-bottom: 20px;"></div>
-        <div id="score" style="font-size: 60px; font-weight: 900; color: var(--success); margin-bottom: 10px;">0</div>
+        <div id="q-eng" style="font-size: 26px; color: var(--gold); font-weight: bold; min-height: 40px;">載入中...</div>
+        <div id="q-chi" style="opacity: 0.6; margin: 10px 0 20px 0; font-size: 18px;"></div>
+        <div id="score">0</div>
         <canvas id="wave"></canvas>
-        <button id="play-btn" class="btn btn-d" onclick="sayIt()">🔊 聽範例</button>
-        <button id="rec-btn" class="btn btn-d" style="color:var(--success)" onclick="runRec()">🎙️ 按我錄音</button>
-        <button id="next-btn" class="btn btn-p" onclick="nextQ()" disabled>下一題 ➔</button>
+        <button id="play-btn" class="btn btn-d" onclick="sayIt()">🔊 聽範例聲音</button>
+        <button id="rec-btn" class="btn btn-d" style="color:var(--success)" onclick="runRec()">🎙️ 按我開始錄音</button>
+        <button id="next-btn" class="btn btn-p" onclick="nextQ()" disabled>儲存並下一題 ➔</button>
     </div>
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbxXJ7BTsKuZs3iW9B81xXQoO-akXIZMf3L6hpUmCjQcbAj8zlZwIRRLQCGIM1EB1aOYyQ/exec";
+    const API = "https://script.google.com/macros/s/AKfycbzeJyLP-S2lPYKnlf9HPk25Ynb-xCKdVT5CuBWFMgw7JQitBxPB3fTF2FhIorNi0FcKaw/exec";
     let db={users:[],questions:[]}, stu="", cur=0, isRec=false, mr, chunks=[], audioCtx, ana, aniId;
 
-    window.onload = async () => { try { const r = await fetch(API); db = await r.json(); } catch(e) { alert("連線失敗"); } };
+    // 初始化資料
+    window.onload = async () => { 
+        try { const r = await fetch(API); db = await r.json(); if(db.error) alert(db.error); } 
+        catch(e) { alert("無法連線至後端伺服器"); } 
+    };
 
     function doLogin() {
         const u = document.getElementById('user').value.trim();
@@ -47,7 +54,7 @@
         if (db.users.some(x => x[0] === u && x[1] === p)) {
             stu = u; document.getElementById('login-ui').classList.add('hidden');
             document.getElementById('main-ui').classList.remove('hidden'); showQ();
-        } else alert("姓名或密碼錯誤");
+        } else alert("登入失敗：姓名或密碼錯誤");
     }
 
     function showQ() {
@@ -61,9 +68,10 @@
     function sayIt() {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(db.questions[cur].eng);
-        u.lang = 'en-US'; window.speechSynthesis.speak(u);
+        u.lang = 'en-US'; u.rate = 0.8; window.speechSynthesis.speak(u);
     }
 
+    // KTV 動畫繪製
     function draw() {
         if (!isRec) return;
         aniId = requestAnimationFrame(draw);
@@ -74,8 +82,8 @@
         ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cvs.width, cvs.height);
         const bw = cvs.width / 20;
         for (let i = 0; i < 20; i++) {
-            const h = (data[i] / 255) * cvs.height * 1.2;
-            ctx.fillStyle = `hsl(${180 + i * 5}, 100%, 50%)`;
+            const h = (data[i] / 255) * cvs.height * 1.5;
+            ctx.fillStyle = `hsl(${180 + i * 10}, 100%, 50%)`;
             ctx.fillRect(i * bw, cvs.height - h, bw - 2, h);
         }
     }
@@ -86,27 +94,35 @@
                 const s = await navigator.mediaDevices.getUserMedia({ audio: true });
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') await audioCtx.resume();
+                
                 ana = audioCtx.createAnalyser(); ana.fftSize = 64;
                 audioCtx.createMediaStreamSource(s).connect(ana);
+                
                 const mime = ["audio/webm", "audio/mp4"].find(t => MediaRecorder.isTypeSupported(t));
                 mr = new MediaRecorder(s, { mimeType: mime });
-                chunks = []; mr.ondataavailable = e => chunks.push(e.data);
+                chunks = []; 
+                mr.ondataavailable = e => chunks.push(e.data);
                 mr.onstop = async () => {
                     const blob = new Blob(chunks, { type: mime });
-                    const reader = new FileReader(); reader.readAsDataURL(blob);
+                    s.getTracks().forEach(t => t.stop()); // 關閉麥克風圖示
+                    if (blob.size < 2000) { alert("錄音太短或沒聲音"); resetBtn(); return; }
+                    
+                    const reader = new FileReader(); 
+                    reader.readAsDataURL(blob);
                     reader.onloadend = async () => {
                         const base64 = reader.result.split(',')[1];
-                        document.getElementById('rec-btn').innerText = "🤖 辨識中...";
-                        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'recognize', audio: base64, mimeType: mime }) });
-                        const res = await r.json();
-                        handleResult(res.transcript);
+                        document.getElementById('rec-btn').innerText = "🤖 AI 辨識中...";
+                        try {
+                            const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'recognize', audio: base64, mimeType: mime }) });
+                            const res = await r.json();
+                            handleResult(res.transcript);
+                        } catch(e) { alert("網路不穩，辨識失敗"); resetBtn(); }
                     };
-                    s.getTracks().forEach(t => t.stop());
                 };
                 mr.start(); isRec = true; draw();
                 document.getElementById('rec-btn').innerText = "⏹ 停止錄音";
                 document.getElementById('rec-btn').style.color = "var(--danger)";
-            } catch (e) { alert("請允許麥克風權限"); }
+            } catch (e) { alert("無法開啟麥克風，請檢查權限設定"); }
         } else {
             isRec = false; cancelAnimationFrame(aniId); mr.stop();
             document.getElementById('rec-btn').disabled = true;
@@ -114,27 +130,34 @@
     }
 
     function handleResult(txt) {
-        document.getElementById('rec-btn').disabled = false;
-        document.getElementById('rec-btn').innerText = "🎙️ 按我錄音";
-        document.getElementById('rec-btn').style.color = "var(--success)";
-        if (!txt || txt === "EMPTY" || txt === "ERROR") { alert("沒聽到聲音喔，請大聲一點"); return; }
+        resetBtn();
+        if (!txt || txt === "EMPTY" || txt === "ERROR") { alert("沒聽到聲音喔，請靠近麥克風再試一次"); return; }
+        
         const target = db.questions[cur].eng.toLowerCase().replace(/[.,!?]/g,"").split(" ");
         const spoken = txt.toLowerCase().replace(/[.,!?]/g,"").split(" ");
-        let match = 0; target.forEach(w => { if(spoken.includes(w)) match++; });
-        let score = Math.floor((match / target.length) * 30);
+        let match = 0; 
+        target.forEach(w => { if(spoken.includes(w)) match++; });
+        
+        let score = Math.floor((match / target.length) * 100); // 改為百分制更直觀
         document.getElementById('score').innerText = score;
         document.getElementById('next-btn').disabled = false;
         window.lastTxt = txt;
-        // 評語
-        if (score >= 27) alert("太厲害了，好棒棒！");
-        else if (score >= 18) alert("還不錯喔，再加油。");
+
+        if (score >= 90) alert("太厲害了，好棒棒！");
+        else if (score >= 60) alert("還不錯喔，再加油。");
         else alert("請認真學習。");
+    }
+
+    function resetBtn() {
+        document.getElementById('rec-btn').disabled = false;
+        document.getElementById('rec-btn').innerText = "🎙️ 按我開始錄音";
+        document.getElementById('rec-btn').style.color = "var(--success)";
     }
 
     function nextQ() {
         fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ student: stu, eng: db.questions[cur].eng, score: document.getElementById('score').innerText, recognizedText: window.lastTxt }) });
         if (cur < db.questions.length - 1) { cur++; showQ(); }
-        else alert("功課做完囉！");
+        else alert("恭喜你！今天的練習全部完成囉！");
     }
 </script>
 </body>
