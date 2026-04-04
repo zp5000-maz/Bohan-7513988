@@ -5,85 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>博瀚 AI 英語 V55.9.8 Gemini 版</title>
     <style>
-        :root { --primary: #00d4ff; --gold: #ffc107; --bg: #050505; --card: #111; --success: #00ffbb; --warning: #ffc107; --danger: #ff4444; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; -webkit-tap-highlight-color: transparent; }
-        .card { background: rgba(17, 17, 17, 0.95); padding: 20px; border-radius: 30px; width: 92%; max-width: 440px; height: 92vh; display: flex; flex-direction: column; text-align: center; border: 1px solid #00d4ff44; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; }
-        
-        .logo-area { margin-top: 30px; position: relative; display: inline-block; width: 110px; height: 110px; }
-        .logo-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); position: relative; z-index: 5; background: #000; }
-        .logo-glow { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary); animation: breathe 2.5s infinite; }
-        @keyframes breathe { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
-        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-
-        .browser-tip { color: var(--gold); font-size: 13px; margin-top: 15px; background: rgba(255, 193, 7, 0.1); padding: 8px 15px; border-radius: 10px; border: 1px dashed var(--gold); display: inline-block; }
+        :root { --primary: #00d4ff; --gold: #ffc107; --bg: #050505; --success: #00ffbb; --warning: #ffc107; --danger: #ff4444; }
+        body { font-family: system-ui; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .card { background: rgba(17, 17, 17, 0.95); padding: 20px; border-radius: 30px; width: 92%; max-width: 440px; height: 92vh; display: flex; flex-direction: column; text-align: center; border: 1px solid #00d4ff44; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.2); backdrop-filter: blur(10px); box-sizing: border-box; }
         #login-ui { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        #loading-zone { width: 100%; display: none; margin-top: 20px; }
-        .progress-track { width: 100%; height: 8px; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #00d4ff, #0080ff); }
-        
-        #toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); width: 85%; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(0,0,0,0.98); padding: 40px 20px; border-radius: 40px; border: 3px solid var(--primary); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
-        #toast.toast-show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        #toast-icon { font-size: 80px; margin-bottom: 10px; }
-        #toast-text { font-size: 24px; font-weight: 900; }
-        
-        #fw-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; display: none; }
-        .content-scroll { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-top: 60px; scroll-behavior: smooth; }
-        
-        .hidden { display: none !important; }
-        #ktv-box { font-size: 30px; font-weight: 800; line-height: 1.4; margin: 10px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
-        .word { color: var(--gold); transition: color 0.2s; } 
-        .word.active { color: var(--primary); text-shadow: 0 0 15px var(--primary); transform: scale(1.1); } 
-        #chi-box { color: #fff; font-size: 18px; margin: 20px 0; opacity: 0.7; }
-        
-        #total-score { font-size: 85px; font-weight: 900; color: var(--success); margin: 0; line-height: 1; }
-        .score-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; background: #000; padding: 10px; border-radius: 20px; }
-        .score-item b { font-size: 36px; display: block; color: #fff; }
-        .score-item span { font-size: 14px; display: block; color: #aaa; }
-        
-        .btn { width: 100%; padding: 16px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-primary { background: linear-gradient(135deg, #00d4ff, #0080ff); color: #000; box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4); }
-        .btn-primary:disabled { background: #444; color: #888; box-shadow: none; cursor: not-allowed; }
-        .btn-dark { background: #222; color: #fff; border: 1px solid #444; }
         .login-input { width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-size: 20px; box-sizing: border-box; outline: none; }
+        .btn { width: 100%; padding: 16px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #0080ff); color: #000; }
+        .btn-primary:disabled { background: #444; color: #888; }
+        .btn-dark { background: #222; color: #fff; border: 1px solid #444; }
+        .hidden { display: none !important; }
+        #ktv-box { font-size: 30px; font-weight: 800; line-height: 1.4; margin: 20px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
+        .word { color: var(--gold); }
+        .word.active { color: var(--primary); text-shadow: 0 0 15px var(--primary); transform: scale(1.1); }
+        #total-score { font-size: 80px; font-weight: 900; color: var(--success); margin: 0; line-height: 1; }
+        .score-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; background: #000; padding: 10px; border-radius: 20px; }
+        #toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); width: 80%; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.4s; background: rgba(0,0,0,0.95); padding: 30px; border-radius: 30px; border: 3px solid var(--primary); }
+        #toast.toast-show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     </style>
 </head>
 <body onclick="wakeAudioContext()">
 
-<canvas id="fw-canvas"></canvas>
-<div id="toast"><div id="toast-icon"></div><div id="toast-text"></div></div>
+<div id="toast"><div id="toast-icon" style="font-size:60px;"></div><div id="toast-text" style="font-size:24px;font-weight:900;"></div></div>
 
 <div class="card">
     <div id="login-ui">
-        <div class="logo-area">
-            <div class="logo-glow"></div>
-            <img src="bohan_logo.png" class="logo-img" alt="博瀚Logo" onerror="this.style.display='none'">
-        </div>
-        <h2 style="color:var(--primary); margin-top: 15px; letter-spacing: 2px;">博瀚 AI 英語系55統</h2>
-        <p style="color:rgba(255,255,255,0.4); margin-top: -10px; font-size: 12px;">V55.9.8 Gemini 回傳版</p>
+        <h2 style="color:var(--primary); margin-top: 30px;">博瀚 AI 英語系統V55.9.8 Gemini 版</h2>
         <input type="text" id="user" class="login-input" placeholder="學生姓名">
         <input type="password" id="pass" class="login-input" placeholder="密碼">
-        <div id="loading-zone">
-            <div class="progress-track"><div class="progress-bar" id="p-bar"></div></div>
-        </div>
-        <button id="login-btn" class="btn btn-primary" onclick="handleStartLoading()" style="margin-top: 10px;">進入學習空間</button>
-        <div class="browser-tip">💡建議使用 Chrome 或 Safari 瀏覽器</div>
+        <button id="login-btn" class="btn btn-primary" onclick="handleStartLoading()">進入學習空間</button>
     </div>
 
     <div id="main-ui" class="hidden" style="display:flex; flex-direction:column; height:100%;">
-        <div class="content-scroll" id="scroller">
-            <div id="ktv-box">載入題目中...</div>
-            <div id="chi-box"></div>
+        <div style="flex:1; overflow-y:auto; padding-top:40px;">
+            <div id="ktv-box">載入中...</div>
+            <div id="chi-box" style="opacity:0.7; font-size:18px;"></div>
         </div>
         <div class="controls">
             <div id="total-score">0</div>
             <div class="score-grid">
-                <div class="score-item"><b id="s-f">0</b><span>流暢</span></div>
-                <div class="score-item"><b id="s-c">0</b><span>完整</span></div>
-                <div class="score-item"><b id="s-q">0</b><span>清晰</span></div>
+                <div class="score-item"><b id="s-f">0</b><br><small>流暢</small></div>
+                <div class="score-item"><b id="s-c">0</b><br><small>完整</small></div>
+                <div class="score-item"><b id="s-q">0</b><br><small>清晰</small></div>
             </div>
-            <canvas id="wave" style="width:100%; height:50px; background:#000; border-radius:10px; margin-bottom:10px; border:1px solid #333;"></canvas>
+            <canvas id="wave" style="width:100%; height:40px; background:#000; border-radius:10px; margin-bottom:10px; border:1px solid #333;"></canvas>
             <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <button id="play-btn" class="btn btn-dark" style="flex:1" onclick="handlePlay()">🔊 聽範例</button>
+                <button id="play-btn" class="btn btn-dark" style="flex:1" onclick="handlePlay()">🔊 播放</button>
                 <button id="rec-btn" class="btn btn-dark" style="flex:2; color:var(--success);" onclick="toggleRec()">🎙️ 按我錄音</button>
             </div>
             <button id="next-btn" class="btn btn-primary" onclick="fastNext()" disabled>下一題 ➔</button>
@@ -92,13 +59,12 @@
 </div>
 
 <script>
-    // 請務必替換為你的 GAS 網址
-    const API = "https://script.google.com/macros/s/AKfycbx7i5vUuAW0JHtlxHxbhuxJKdJfkJNTTCrwmZMUc-fB1hfoiIXtohROzOkbbGFgJWZT0w/exec"; 
-    
+    const API = "https://script.google.com/macros/s/AKfycbxi6DqaohTCDd6Tt__iBxgKvHWwaOopWCxdS53Vem2HeIGKCqsyF4TQO3R6NMUGMgcZhw/exec"; 
     let db = { users:[], questions:[] }, stu = "", cur = 0, isRec = false, audioBlob = null;
-    let audioCtx, ana, stream, isPlaying = false, currentRecognizedText = "";
+    let audioCtx, ana, stream, isPlaying = false, recognizedText = "";
     
-    const vGood = new Audio('good.mp3'), vTry = new Audio('try.mp3'), vStudy = new Audio('study.mp3'), vNoSound = new Audio('nosound.mp3'), cheerAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3');
+    // 音效載入
+    const vGood = new Audio('good.mp3'), vTry = new Audio('try.mp3'), vStudy = new Audio('study.mp3'), vNoSound = new Audio('nosound.mp3');
 
     async function wakeAudioContext() {
         if (!audioCtx || audioCtx.state === 'closed') audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -106,7 +72,7 @@
     }
 
     async function init() {
-        try { const r = await fetch(`${API}?t=${Date.now()}`); const d = await r.json(); if(d.users) db = d; } catch(e) { console.log("Init Error"); }
+        try { const r = await fetch(`${API}?t=${Date.now()}`); const d = await r.json(); if(d.users) db = d; } catch(e) { console.log("DB Load Error"); }
     }
     window.onload = init;
 
@@ -114,15 +80,11 @@
         const u = document.getElementById('user').value.trim();
         const p = document.getElementById('pass').value.trim();
         const found = db.users.find(x => String(x[0]) === u && String(x[1]) === p);
-        if(!found) { alert("驗證失敗"); return; }
+        if(!found) { alert("驗證失敗，請檢查姓名與密碼"); return; }
         stu = u;
-        document.getElementById('login-btn').style.display = 'none';
-        document.getElementById('loading-zone').style.display = 'block';
-        let prg = 0;
-        const timer = setInterval(() => {
-            prg += 10; document.getElementById('p-bar').style.width = prg + '%';
-            if(prg >= 100) { clearInterval(timer); setTimeout(() => { document.getElementById('login-ui').classList.add('hidden'); document.getElementById('main-ui').classList.remove('hidden'); renderQ(); }, 300); }
-        }, 50);
+        document.getElementById('login-ui').classList.add('hidden');
+        document.getElementById('main-ui').classList.remove('hidden');
+        renderQ();
     }
 
     function renderQ() {
@@ -130,120 +92,113 @@
         document.getElementById('ktv-box').innerHTML = q.eng.split(" ").map((w, i) => `<span class="word" id="w-${i}">${w}</span>`).join(" ");
         document.getElementById('chi-box').innerText = q.chi;
         document.getElementById('total-score').innerText = "0";
-        document.getElementById('total-score').style.color = "var(--success)";
-        document.getElementById('s-f').innerText = "0"; document.getElementById('s-c').innerText = "0"; document.getElementById('s-q').innerText = "0";
         document.getElementById('next-btn').disabled = true;
-        currentRecognizedText = ""; audioBlob = null;
-        document.getElementById('scroller').scrollTop = 0;
         resetPlayState();
     }
 
-    function resetPlayState() { window.speechSynthesis.cancel(); isPlaying = false; document.getElementById('play-btn').innerText = "🔊 聽範例"; document.querySelectorAll('.word').forEach(w => w.classList.remove('active')); }
-    
-    function playFull() {
-        resetPlayState(); isPlaying = true; document.getElementById('play-btn').innerText = "⏹ 停止";
+    function resetPlayState() { window.speechSynthesis.cancel(); isPlaying = false; document.getElementById('play-btn').innerText = "🔊 播放"; document.querySelectorAll('.word').forEach(w => w.classList.remove('active')); }
+
+    function handlePlay() {
+        if(isPlaying) { resetPlayState(); return; }
+        isPlaying = true; document.getElementById('play-btn').innerText = "⏹ 停止";
         const ut = new SpeechSynthesisUtterance(db.questions[cur].eng);
-        ut.lang = 'en-US'; ut.rate = 0.7; let idx = 0;
-        ut.onboundary = (e) => { 
-            if(e.name === 'word' && isPlaying) { 
-                const ws = document.querySelectorAll('.word');
-                ws.forEach(s=>s.classList.remove('active')); 
-                if(ws[idx]) { ws[idx].classList.add('active'); idx++; }
-            } 
+        ut.lang = 'en-US'; ut.rate = 0.8;
+        let idx = 0;
+        ut.onboundary = (e) => {
+            if(e.name === 'word') {
+                document.querySelectorAll('.word').forEach(s => s.classList.remove('active'));
+                const target = document.getElementById(`w-${idx}`);
+                if(target) target.classList.add('active');
+                idx++;
+            }
         };
-        ut.onend = () => { if(isPlaying) { 
-            const ch = new SpeechSynthesisUtterance(db.questions[cur].chi); ch.lang = 'zh-TW'; ch.rate = 0.8;
-            ch.onend = () => resetPlayState();
-            window.speechSynthesis.speak(ch); 
-        }};
+        ut.onend = resetPlayState;
         window.speechSynthesis.speak(ut);
     }
 
-    function handlePlay() { if (isPlaying) resetPlayState(); else playFull(); }
-
     async function toggleRec() {
-        resetPlayState(); await wakeAudioContext(); 
+        await wakeAudioContext();
         if (!isRec) {
-            audioBlob = null;
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                ana = audioCtx.createAnalyser(); ana.fftSize = 64; 
+                ana = audioCtx.createAnalyser(); ana.fftSize = 64;
                 audioCtx.createMediaStreamSource(stream).connect(ana);
                 isRec = true; drawWave();
                 
-                const mr = new MediaRecorder(stream); 
+                let options = { mimeType: 'audio/webm;codecs=opus' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) delete options.mimeType;
+                
+                const mr = new MediaRecorder(stream, options);
                 let chunks = [];
-                mr.ondataavailable = e => chunks.push(e.data);
+                mr.ondataavailable = e => { if(e.data.size > 0) chunks.push(e.data); };
                 mr.onstop = async () => {
                     audioBlob = new Blob(chunks, { type: 'audio/webm' });
                     stream.getTracks().forEach(t => t.stop());
-                    await processGemini();
+                    if(audioBlob.size > 1000) await sendToGemini();
+                    else { alert("錄音太短，請重試"); resetRecUI(); }
                 };
                 mr.start(); window.currentMR = mr;
-                document.getElementById('rec-btn').innerText = "⏹ 停止並辨識"; 
+                document.getElementById('rec-btn').innerText = "⏹ 停止辨識";
                 document.getElementById('rec-btn').style.color = "var(--danger)";
-            } catch (e) { alert("麥克風啟動失敗，請確認權限設定"); }
+            } catch (e) { alert("麥克風錯誤: " + e.message); }
         } else {
             isRec = false;
             if (window.currentMR) window.currentMR.stop();
-            document.getElementById('rec-btn').innerText = "🤖 AI 辨識中..."; 
+            document.getElementById('rec-btn').innerText = "🤖 辨識中...";
             document.getElementById('rec-btn').disabled = true;
         }
     }
 
-    async function processGemini() {
-        if (!audioBlob) return;
+    function resetRecUI() {
+        document.getElementById('rec-btn').innerText = "🎙️ 按我錄音";
+        document.getElementById('rec-btn').style.color = "var(--success)";
+        document.getElementById('rec-btn').disabled = false;
+    }
+
+    async function sendToGemini() {
         const reader = new FileReader();
         reader.readAsDataURL(audioBlob);
         reader.onloadend = async () => {
             const base64 = reader.result.split(',')[1];
             try {
-                const response = await fetch(API, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'recognize', audio: base64 })
-                });
-                const res = await response.json();
+                const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'recognize', audio: base64 }) });
+                const res = await r.json();
                 calculateAI(res.transcript || "");
-            } catch (e) {
-                showToast("❌", "AI 連線失敗", "var(--danger)", 0);
-            } finally {
-                document.getElementById('rec-btn').innerText = "🎙️ 按我錄音";
-                document.getElementById('rec-btn').style.color = "var(--success)";
-                document.getElementById('rec-btn').disabled = false;
-            }
+            } catch (e) { alert("辨識超時，請檢查網路"); }
+            finally { resetRecUI(); }
         };
     }
 
-    function calculateAI(recognized) {
-        if(!recognized || recognized.trim() === "") { 
-            showToast("😤", "沒聽到聲音喔", "var(--danger)", 0); return; 
-        }
-        currentRecognizedText = recognized;
-        const target = db.questions[cur].eng.toLowerCase().replace(/[.,!?]/g,"").split(/\s+/).filter(x => x);
-        const spoken = recognized.toLowerCase().replace(/[.,!?]/g,"").split(/\s+/);
-        
-        let match = 0; 
-        target.forEach(w => { if(spoken.includes(w)) match++; });
-        
+    function calculateAI(spoken) {
+        if(!spoken) { showToast("😤", "沒聽到聲音喔", "var(--danger)", 4); return; }
+        recognizedText = spoken;
+        const target = db.questions[cur].eng.toLowerCase().replace(/[.,!?]/g,"").split(/\s+/).filter(x=>x);
+        const userArr = spoken.toLowerCase().replace(/[.,!?]/g,"").split(/\s+/);
+        let match = 0;
+        target.forEach(w => { if(userArr.includes(w)) match++; });
         const rate = match / target.length;
-        // 總分 30 分邏輯
-        let total = rate >= 0.9 ? Math.floor(rate * 3 + 27) : (rate >= 0.5 ? Math.floor(rate * 14 + 13) : Math.max(5, Math.floor(rate * 20)));
         
-        document.getElementById('s-f').innerText = Math.floor(total/3); 
-        document.getElementById('s-c').innerText = Math.floor(total/3); 
+        // 總分 30 邏輯
+        let total = rate >= 0.9 ? Math.floor(rate * 3 + 27) : (rate >= 0.5 ? Math.floor(rate * 14 + 13) : Math.max(5, Math.floor(rate * 20)));
+        document.getElementById('s-f').innerText = Math.floor(total/3);
+        document.getElementById('s-c').innerText = Math.floor(total/3);
         document.getElementById('s-q').innerText = total - Math.floor(total/3)*2;
         document.getElementById('total-score').innerText = total;
-        document.getElementById('total-score').style.color = rate>=0.9?"var(--success)":(rate>=0.5?"var(--warning)":"var(--danger)");
         
-        showToast(rate>=0.9?"👑":(rate>=0.5?"👍":"😤"), rate>=0.9?"太厲害了，好棒棒":(rate>=0.5?"還不錯喔，再加油":"請認真學習！"), rate>=0.9?"var(--success)":"var(--warning)", rate>=0.9?1:(rate>=0.5?2:3));
+        if(rate >= 0.9) showToast("👑", "太厲害了，好棒棒", "var(--success)", 1);
+        else if(rate >= 0.5) showToast("👍", "還不錯喔，再加油", "var(--warning)", 2);
+        else showToast("😤", "請認真學習！", "var(--danger)", 3);
+        
         document.getElementById('next-btn').disabled = false;
     }
 
-    function showToast(icon, text, borderColor, type) {
-        const t = document.getElementById('toast'); document.getElementById('toast-icon').innerText = icon; document.getElementById('toast-text').innerText = text;
-        t.style.borderColor = borderColor; t.classList.add('toast-show');
-        if (type === 1) vGood.play().catch(()=>{}); else if (type === 2) vTry.play().catch(()=>{}); else if (type === 3) vStudy.play().catch(()=>{}); else vNoSound.play().catch(()=>{});
-        setTimeout(() => t.classList.remove('toast-show'), 2500);
+    function showToast(icon, text, color, type) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-icon').innerText = icon;
+        document.getElementById('toast-text').innerText = text;
+        t.style.borderColor = color; t.classList.add('toast-show');
+        if(type===1) vGood.play(); else if(type===2) vTry.play(); else if(type===3) vStudy.play(); else vNoSound.play();
+        setTimeout(() => t.classList.remove('toast-show'), 2000);
     }
 
     function drawWave() {
@@ -252,54 +207,19 @@
         const data = new Uint8Array(ana.frequencyBinCount);
         const render = () => { if (!isRec) return; requestAnimationFrame(render); ana.getByteFrequencyData(data);
             c.fillStyle = '#000'; c.fillRect(0, 0, cvs.width, cvs.height);
-            for (let i = 0; i < 20; i++) { const h = (data[i] / 255) * cvs.height * 2.5; c.fillStyle = `hsl(${i * 18 + 180}, 100%, 60%)`; c.fillRect(i * (cvs.width/20), cvs.height - h, (cvs.width/20) - 4, h); }
+            for (let i = 0; i < 20; i++) { const h = (data[i] / 255) * cvs.height * 2; c.fillStyle = `hsl(${i * 18 + 180}, 100%, 60%)`; c.fillRect(i * (cvs.width/20), cvs.height - h, (cvs.width/20) - 2, h); }
         }; render();
     }
 
     async function fastNext() {
         const btn = document.getElementById('next-btn');
         btn.disabled = true;
-        const score = document.getElementById('total-score').innerText;
+        // 上傳成績
+        fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ student: stu, eng: db.questions[cur].eng, score: document.getElementById('total-score').innerText, recognizedText: recognizedText }) });
         
         if (cur === db.questions.length - 1) {
-            window.speechSynthesis.cancel();
-            const ut = new SpeechSynthesisUtterance("Congratulation, Mission completed!");
-            ut.lang = 'en-US'; window.speechSynthesis.speak(ut);
-        }
-
-        try {
-            fetch(API, { 
-                method: 'POST', 
-                mode: 'no-cors', 
-                body: JSON.stringify({ student: stu, eng: db.questions[cur].eng, score: score, recognizedText: currentRecognizedText }) 
-            });
-        } catch(e) {}
-
-        if (cur === db.questions.length - 1) runFinal(); 
-        else { cur++; renderQ(); }
-    }
-
-    function runFinal() {
-        const cvs = document.getElementById('fw-canvas'); cvs.style.display = 'block'; const ctx = cvs.getContext('2d'); 
-        cvs.width = window.innerWidth; cvs.height = window.innerHeight;
-        cheerAudio.play().catch(()=>{});
-        const pts = []; for(let i=0; i<150; i++) pts.push({ x: cvs.width/2, y: cvs.height/2, vx: (Math.random()-0.5)*22, vy: (Math.random()-0.5)*22, c: `hsl(${Math.random()*360},100%,60%)`, a: 1 });
-        function anim() {
-            ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0,0,cvs.width,cvs.height);
-            pts.forEach((p,i) => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.a-=0.008; ctx.globalAlpha=p.a; ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,7); ctx.fill(); if(p.a<=0) pts.splice(i,1); });
-            if(pts.length>0) requestAnimationFrame(anim); else { cvs.style.display='none'; showFinal(); }
-        } anim();
-    }
-
-    function showFinal() {
-        document.getElementById('main-ui').innerHTML = `
-            <div style="margin-top:100px; padding: 20px; animation: pop 0.6s ease-out;">
-                <div style="font-size: 80px; margin-bottom: 20px;">🏆</div>
-                <h1 style="color:var(--primary); line-height: 1.2;">Congratulation,<br>Mission completed!</h1>
-                <h2 style="color:#fff; opacity:0.8;">功課完成，上傳成功！</h2>
-                <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 40px; width: 220px;">回主畫面</button>
-            </div>
-        `;
+            document.getElementById('main-ui').innerHTML = "<h1 style='margin-top:100px;'>🏆 任務完成！</h1><button class='btn btn-primary' onclick='location.reload()'>返回</button>";
+        } else { cur++; renderQ(); }
     }
 </script>
 </body>
