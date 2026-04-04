@@ -3,47 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>博瀚 AI 英語 V55.9.9 穩定版</title>
+    <title>博瀚 AI 英語 V6.0</title>
     <style>
         :root { --primary: #00d4ff; --gold: #ffc107; --bg: #050505; --card: #111; --success: #00ffbb; --warning: #ffc107; --danger: #ff4444; }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; -webkit-tap-highlight-color: transparent; }
         .card { background: rgba(17, 17, 17, 0.95); padding: 20px; border-radius: 30px; width: 92%; max-width: 440px; height: 92vh; display: flex; flex-direction: column; text-align: center; border: 1px solid #00d4ff44; position: relative; box-shadow: 0 0 30px rgba(0, 212, 255, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-sizing: border-box; }
         
-        .logo-area { margin-top: 30px; position: relative; display: inline-block; width: 110px; height: 110px; }
-        .logo-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); position: relative; z-index: 5; background: #000; }
-        .logo-glow { position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary); animation: breathe 2.5s infinite; }
-        @keyframes breathe { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
-        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-
-        #login-ui { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        #loading-zone { width: 100%; display: none; margin-top: 20px; }
-        .progress-track { width: 100%; height: 8px; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #00d4ff, #0080ff); }
+        /* 標誌區域 */
+        .logo-area { margin-top: 30px; position: relative; display: inline-block; width: 100px; height: 100px; }
+        .logo-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); background: #000; }
         
+        /* 登入介面 */
+        .login-input { width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-size: 20px; box-sizing: border-box; outline: none; }
+        
+        /* 提示框 */
         #toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); width: 85%; z-index: 1000; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(0,0,0,0.98); padding: 40px 20px; border-radius: 40px; border: 3px solid var(--primary); display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
         #toast.toast-show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         #toast-icon { font-size: 80px; margin-bottom: 10px; }
-        #toast-text { font-size: 24px; font-weight: 900; }
+        #toast-text { font-size: 22px; font-weight: 700; color: #fff; line-height: 1.4; }
+
+        /* 主內容區 */
+        .content-scroll { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-top: 20px; }
+        #ktv-box { font-size: 32px; font-weight: 800; line-height: 1.4; color: var(--gold); margin: 20px 0; }
+        #chi-box { color: rgba(255,255,255,0.6); font-size: 18px; margin-bottom: 20px; }
         
-        #fw-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; display: none; }
-        .content-scroll { flex: 1; overflow-y: auto; margin-bottom: 10px; padding-top: 60px; scroll-behavior: smooth; }
+        /* 分數顯示 */
+        #total-score { font-size: 100px; font-weight: 900; color: var(--success); margin: 10px 0; line-height: 1; }
+        
+        /* 按鈕樣式 */
+        .btn { width: 100%; padding: 18px; border-radius: 20px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #0080ff); color: #000; box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4); }
+        .btn-primary:disabled { background: #333; color: #666; box-shadow: none; }
+        .btn-dark { background: #222; color: #fff; border: 1px solid #444; }
         
         .hidden { display: none !important; }
-        #ktv-box { font-size: 30px; font-weight: 800; line-height: 1.4; margin: 10px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 12px; }
-        .word { color: var(--gold); transition: color 0.2s; } 
-        .word.active { color: var(--primary); text-shadow: 0 0 15px var(--primary); transform: scale(1.1); } 
-        #chi-box { color: #fff; font-size: 18px; margin: 20px 0; opacity: 0.7; }
-        
-        #total-score { font-size: 85px; font-weight: 900; color: var(--success); margin: 0; line-height: 1; }
-        .score-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; background: #000; padding: 10px; border-radius: 20px; }
-        .score-item b { font-size: 36px; display: block; color: #fff; }
-        .score-item span { font-size: 14px; display: block; color: #aaa; }
-        
-        .btn { width: 100%; padding: 16px; border-radius: 18px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-primary { background: linear-gradient(135deg, #00d4ff, #0080ff); color: #000; box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4); }
-        .btn-primary:disabled { background: #444; color: #888; box-shadow: none; cursor: not-allowed; }
-        .btn-dark { background: #222; color: #fff; border: 1px solid #444; }
-        .login-input { width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 15px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-size: 20px; box-sizing: border-box; outline: none; }
+        #fw-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; display: none; }
     </style>
 </head>
 <body onclick="wakeAudioContext()">
@@ -53,224 +47,172 @@
 
 <div class="card">
     <div id="login-ui">
-        <div class="logo-area">
-            <div class="logo-glow"></div>
-            <img src="bohan_logo.png" class="logo-img" alt="博瀚Logo" onerror="this.style.display='none'">
-        </div>
-        <h2 style="color:var(--primary); margin-top: 15px; letter-spacing: 2px;">博瀚AI英語系統V55.9.9 穩定版</h2>
-        <p style="color:rgba(255,255,255,0.4); margin-top: -10px; font-size: 12px;">V55.9.9 動態題數版</p>
+        <div class="logo-area"><img src="bohan_logo.png" class="logo-img" onerror="this.style.display='none'"></div>
+        <h2 style="color:var(--primary); margin: 20px 0;">博瀚 AI 英語 V6.0</h2>
         <input type="text" id="user" class="login-input" placeholder="學生姓名">
         <input type="password" id="pass" class="login-input" placeholder="密碼">
-        <div id="loading-zone">
-            <div class="progress-track"><div class="progress-bar" id="p-bar"></div></div>
-        </div>
-        <button id="login-btn" class="btn btn-primary" onclick="handleStartLoading()" style="margin-top: 10px;">進入學習空間</button>
+        <button id="login-btn" class="btn btn-primary" onclick="handleLogin()">進入學習空間</button>
     </div>
 
     <div id="main-ui" class="hidden" style="display:flex; flex-direction:column; height:100%;">
-        <div class="content-scroll" id="scroller">
+        <div class="content-scroll">
             <div id="ktv-box">載入中...</div>
             <div id="chi-box"></div>
         </div>
-        <div class="controls">
+        
+        <div class="score-area">
             <div id="total-score">0</div>
-            <div class="score-grid">
-                <div class="score-item"><b id="s-f">0</b><span>流暢</span></div>
-                <div class="score-item"><b id="s-c">0</b><span>完整</span></div>
-                <div class="score-item"><b id="s-q">0</b><span>清晰</span></div>
-            </div>
-            <canvas id="wave" style="width:100%; height:50px; background:#000; border-radius:10px; margin-bottom:10px; border:1px solid #333;"></canvas>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <button id="play-btn" class="btn btn-dark" style="flex:1" onclick="handlePlay()">🔊 聽範例</button>
-                <button id="rec-btn" class="btn btn-dark" style="flex:2; color:var(--success);" onclick="toggleRec()">🎙️ 按我錄音</button>
-            </div>
+            <p id="ai-feedback" style="font-size: 14px; color: #aaa; margin-bottom: 20px;">等待錄音中...</p>
+        </div>
+
+        <div class="controls">
+            <button id="play-btn" class="btn btn-dark" onclick="handlePlay()">🔊 聽正確發音</button>
+            <button id="rec-btn" class="btn btn-dark" style="color:var(--success); font-size: 22px; border: 2px solid var(--success);" onclick="toggleRec()">🎙️ 按我開始錄音</button>
             <button id="next-btn" class="btn btn-primary" onclick="fastNext()" disabled>下一題 ➔</button>
         </div>
     </div>
 </div>
 
 <script>
+    // 請務必將此處替換為您部署後的 GAS 網址
     const API = "https://script.google.com/macros/s/AKfycbyR0h0Ba2wna6jXnFkL7vcvpok2iPrnSMPPwSuazF_nl7ff3KUCwiBQD2QQSkM75JJMMw/exec"; 
-    let db = { users:[], questions:[] }, stu = "", cur = 0, isRec = false, latestResult = "", audioBlob = null;
-    let audioCtx, ana, rec, stream, isPlaying = false;
     
-    const vGood = new Audio('good.mp3'), vTry = new Audio('try.mp3'), vStudy = new Audio('study.mp3'), vNoSound = new Audio('nosound.mp3'), cheerAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3');
+    let db = { users:[], questions:[] }, stu = "", cur = 0;
+    let isRec = false, audioBlob = null, audioCtx, isPlaying = false;
 
-    async function wakeAudioContext() {
-        if (!audioCtx || audioCtx.state === 'closed') audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') await audioCtx.resume();
-        const unlock = new SpeechSynthesisUtterance("");
-        unlock.volume = 0; window.speechSynthesis.speak(unlock);
-    }
-
-    // --- 關鍵修正 1：自動過濾後台空白題目 ---
+    // 初始化：載入資料並過濾空題
     async function init() {
-        try { 
-            const r = await fetch(`${API}?t=${Date.now()}`); 
-            const d = await r.json(); 
+        try {
+            const r = await fetch(`${API}?t=${Date.now()}`);
+            const d = await r.json();
             if(d.questions) {
-                // 只保留英文不為空的題目
                 db.questions = d.questions.filter(q => q.eng && q.eng.trim() !== "");
                 db.users = d.users;
-            } 
-        } catch(e) {}
+            }
+        } catch(e) { console.error("初始化失敗"); }
     }
     window.onload = init;
 
-    function handleStartLoading() {
-        const u = document.getElementById('user').value.trim(), p = document.getElementById('pass').value.trim();
-        const found = db.users.find(x => String(x[0]) === u && String(x[1]) === p);
-        if(!found) { alert("驗證失敗"); return; }
-        stu = u;
-        document.getElementById('login-btn').style.display = 'none';
-        document.getElementById('loading-zone').style.display = 'block';
-        let prg = 0;
-        const timer = setInterval(() => {
-            prg += 10; document.getElementById('p-bar').style.width = prg + '%';
-            if(prg >= 100) { clearInterval(timer); setTimeout(() => { document.getElementById('login-ui').classList.add('hidden'); document.getElementById('main-ui').classList.remove('hidden'); renderQ(); }, 300); }
-        }, 50);
+    // 喚醒音訊 (解決手機自動播放限制)
+    async function wakeAudioContext() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
     }
 
-    // --- 關鍵修正 2：加入題目渲染安全防護 ---
+    // 登入邏輯
+    function handleLogin() {
+        const u = document.getElementById('user').value.trim(), p = document.getElementById('pass').value.trim();
+        const found = db.users.find(x => String(x[0]) === u && String(x[1]) === p);
+        if(!found) { alert("姓名或密碼錯誤"); return; }
+        stu = u;
+        document.getElementById('login-ui').classList.add('hidden');
+        document.getElementById('main-ui').classList.remove('hidden');
+        renderQ();
+    }
+
+    // 渲染題目
     function renderQ() {
         if (cur >= db.questions.length) { runFinal(); return; }
         const q = db.questions[cur];
-        
-        // 如果題目內容不正常，補一個替代文字
-        const text = q.eng || "No Content";
-        document.getElementById('ktv-box').innerHTML = text.split(" ").map((w, i) => `<span class="word" id="w-${i}">${w}</span>`).join(" ");
-        document.getElementById('chi-box').innerText = q.chi || "";
-        
+        document.getElementById('ktv-box').innerText = q.eng;
+        document.getElementById('chi-box').innerText = q.chi;
         document.getElementById('total-score').innerText = "0";
-        document.getElementById('s-f').innerText = "0"; document.getElementById('s-c').innerText = "0"; document.getElementById('s-q').innerText = "0";
+        document.getElementById('ai-feedback').innerText = "請按下按鈕並開始朗讀";
         document.getElementById('next-btn').disabled = true;
-        latestResult = ""; audioBlob = null;
-        document.getElementById('scroller').scrollTop = 0;
-        resetPlayState();
+        audioBlob = null;
     }
 
-    function resetPlayState() { window.speechSynthesis.cancel(); isPlaying = false; document.getElementById('play-btn').innerText = "🔊 聽範例"; document.querySelectorAll('.word').forEach(w => w.classList.remove('active')); }
-    
-    function playFull() {
-        resetPlayState(); isPlaying = true; document.getElementById('play-btn').innerText = "⏹ 停止";
+    // 播放範例 (TTS)
+    function handlePlay() {
+        window.speechSynthesis.cancel();
         const ut = new SpeechSynthesisUtterance(db.questions[cur].eng);
-        ut.lang = 'en-US'; ut.rate = 0.7; let idx = 0;
-        ut.onboundary = (e) => { 
-            if(e.name === 'word' && isPlaying) { 
-                const ws = document.querySelectorAll('.word');
-                ws.forEach(s=>s.classList.remove('active')); 
-                if(ws[idx]) { ws[idx].classList.add('active'); ws[idx].scrollIntoView({ behavior: 'smooth', block: 'center' }); idx++; }
-            } 
-        };
-        ut.onend = () => { if(isPlaying) { 
-            setTimeout(() => {
-                const ch = new SpeechSynthesisUtterance(db.questions[cur].chi); ch.lang = 'zh-TW'; ch.rate = 0.8;
-                ch.onstart = () => { document.getElementById('chi-box').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
-                ch.onend = () => resetPlayState();
-                window.speechSynthesis.speak(ch); 
-            }, 100);
-        }};
+        ut.lang = 'en-US'; ut.rate = 0.8;
         window.speechSynthesis.speak(ut);
     }
 
-    function handlePlay() { if (isPlaying) resetPlayState(); else playFull(); }
-
+    // 錄音切換
     async function toggleRec() {
-        resetPlayState(); await wakeAudioContext(); 
+        const btn = document.getElementById('rec-btn');
         if (!isRec) {
-            latestResult = ""; audioBlob = null;
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                ana = audioCtx.createAnalyser(); ana.fftSize = 64; 
-                audioCtx.createMediaStreamSource(stream).connect(ana);
-                isRec = true; drawWave();
-                const mr = new MediaRecorder(stream); let chunks = [];
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mr = new MediaRecorder(stream);
+                let chunks = [];
                 mr.ondataavailable = e => chunks.push(e.data);
-                mr.onstop = () => { audioBlob = new Blob(chunks, { type: 'audio/webm' }); stream.getTracks().forEach(t => t.stop()); };
-                mr.start(); window.currentMR = mr;
-                const Recog = window.webkitSpeechRecognition || window.SpeechRecognition;
-                rec = new Recog(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
-                rec.onresult = e => { latestResult = e.results[e.results.length - 1][0].transcript; };
-                rec.start();
-                document.getElementById('rec-btn').innerText = "⏹ 送出錄音"; document.getElementById('rec-btn').style.color = "var(--danger)";
-            } catch (e) { alert("麥克風啟動失敗"); }
+                mr.onstop = () => {
+                    audioBlob = new Blob(chunks, { type: 'audio/webm' });
+                    stream.getTracks().forEach(t => t.stop());
+                    showToast("⏳", "AI 老師正在聽你的發音...", "var(--primary)", 0);
+                    uploadToAI();
+                };
+                mr.start();
+                window.currentMR = mr;
+                isRec = true;
+                btn.innerText = "⏹ 停止錄音";
+                btn.style.color = "var(--danger)";
+                btn.style.borderColor = "var(--danger)";
+            } catch (e) { alert("無法開啟麥克風，請檢查權限設定。"); }
         } else {
-            isRec = false; if (rec) rec.stop(); if (window.currentMR) window.currentMR.stop();
-            document.getElementById('rec-btn').innerText = "🎙️ 按我錄音"; document.getElementById('rec-btn').style.color = "var(--success)";
-            setTimeout(calculateAI, 800);
+            isRec = false;
+            if (window.currentMR) window.currentMR.stop();
+            btn.innerText = "🎙️ 按我開始錄音";
+            btn.style.color = "var(--success)";
+            btn.style.borderColor = "var(--success)";
         }
     }
 
-    function drawWave() {
-        if (!isRec || !ana) return; const cvs = document.getElementById('wave'), c = cvs.getContext('2d');
-        cvs.width = cvs.offsetWidth; cvs.height = cvs.offsetHeight;
-        const data = new Uint8Array(ana.frequencyBinCount);
-        const render = () => { if (!isRec) return; requestAnimationFrame(render); ana.getByteFrequencyData(data);
-            c.fillStyle = '#000'; c.fillRect(0, 0, cvs.width, cvs.height);
-            for (let i = 0; i < 20; i++) { const h = (data[i] / 255) * cvs.height * 2.5; c.fillStyle = `hsl(${i * 18 + 180}, 100%, 60%)`; c.fillRect(i * (cvs.width/20), cvs.height - h, (cvs.width/20) - 4, h); }
-        }; render();
+    // 將錄音上傳至雲端讓 Gemini 評分
+    async function uploadToAI() {
+        if (!audioBlob) return;
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+            const base64Audio = reader.result.split(',')[1];
+            try {
+                const response = await fetch(API, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        student: stu,
+                        eng: db.questions[cur].eng,
+                        audio: base64Audio
+                    })
+                });
+                const result = await response.json();
+                
+                // 更新畫面
+                document.getElementById('total-score').innerText = result.score;
+                document.getElementById('ai-feedback').innerText = result.feedback;
+                document.getElementById('next-btn').disabled = false;
+                
+                showToast(result.score >= 80 ? "👑" : "👍", result.feedback, "var(--success)", 0);
+            } catch (e) {
+                showToast("❌", "上傳失敗，請再試一次", "var(--danger)", 0);
+            }
+        };
     }
 
-    function calculateAI() {
-        if(!latestResult || latestResult.trim() === "") { showToast("😤", "沒聽到聲音喔", "var(--danger)", 0); return; }
-        const target = db.questions[cur].eng.toLowerCase().replace(/[.,!?]/g,"").split(/\s+/).filter(x => x);
-        const spoken = latestResult.toLowerCase().replace(/[.,!?]/g,"").split(/\s+/);
-        let match = 0; target.forEach(w => { if(spoken.includes(w)) match++; });
-        const rate = match / target.length;
-        let total = rate >= 0.9 ? Math.floor(rate * 3 + 27) : (rate >= 0.5 ? Math.floor(rate * 14 + 13) : Math.max(5, Math.floor(rate * 20)));
-        document.getElementById('s-f').innerText = Math.floor(total/3); document.getElementById('s-c').innerText = Math.floor(total/3); document.getElementById('s-q').innerText = total - Math.floor(total/3)*2;
-        document.getElementById('total-score').innerText = total; document.getElementById('total-score').style.color = rate>=0.9?"var(--success)":(rate>=0.5?"var(--warning)":"var(--danger)");
-        showToast(rate>=0.9?"👑":(rate>=0.5?"👍":"😤"), rate>=0.9?"太厲害了，好棒棒":(rate>=0.5?"還不錯喔，再加油":"請認真學習！"), rate>=0.9?"var(--success)":"var(--warning)", rate>=0.9?1:(rate>=0.5?2:3));
-        document.getElementById('next-btn').disabled = false;
+    function fastNext() {
+        cur++;
+        renderQ();
     }
 
-    function showToast(icon, text, borderColor, type) {
-        const t = document.getElementById('toast'); document.getElementById('toast-icon').innerText = icon; document.getElementById('toast-text').innerText = text;
-        t.style.borderColor = borderColor; t.classList.add('toast-show');
-        setTimeout(() => {
-            if (type === 1) vGood.play(); else if (type === 2) vTry.play(); else if (type === 3) vStudy.play(); else vNoSound.play();
-        }, 100);
-        setTimeout(() => t.classList.remove('toast-show'), 2500);
-    }
-
-    // --- 關鍵修正 3：動態判斷最後一題 ---
-    async function fastNext() {
-        const btn = document.getElementById('next-btn');
-        btn.disabled = true; 
-        const score = document.getElementById('total-score').innerText;
-        const isFinal = (cur === db.questions.length - 1);
-
-        if (isFinal) {
-            window.speechSynthesis.cancel();
-            const ut = new SpeechSynthesisUtterance("Congratulation, Mission completed!");
-            ut.lang = 'en-US'; window.speechSynthesis.speak(ut);
-        }
-
-        let base64Audio = "";
-        if (audioBlob) {
-            const reader = new FileReader(); reader.readAsDataURL(audioBlob);
-            await new Promise(res => { reader.onloadend = () => { base64Audio = reader.result.split(',')[1]; res(); }; });
-        }
-        try { fetch(API, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ student: stu, eng: db.questions[cur].eng, score: score, audio: base64Audio }) }); } catch(e) {}
-
-        if (isFinal) runFinal(); 
-        else { cur++; renderQ(); }
+    function showToast(icon, text, color, type) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-icon').innerText = icon;
+        document.getElementById('toast-text').innerText = text;
+        t.style.borderColor = color;
+        t.classList.add('toast-show');
+        setTimeout(() => t.classList.remove('toast-show'), 3000);
     }
 
     function runFinal() {
-        const cvs = document.getElementById('fw-canvas'); cvs.style.display = 'block'; const ctx = cvs.getContext('2d'); 
-        cvs.width = window.innerWidth; cvs.height = window.innerHeight;
-        cheerAudio.play().catch(()=>{});
-        const pts = []; for(let i=0; i<150; i++) pts.push({ x: cvs.width/2, y: cvs.height/2, vx: (Math.random()-0.5)*22, vy: (Math.random()-0.5)*22, c: `hsl(${Math.random()*360},100%,60%)`, a: 1 });
-        function anim() {
-            ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0,0,cvs.width,cvs.height);
-            pts.forEach((p,i) => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.a-=0.008; ctx.globalAlpha=p.a; ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,7); ctx.fill(); if(p.a<=0) pts.splice(i,1); });
-            if(pts.length>0) requestAnimationFrame(anim); else { cvs.style.display='none'; showFinal(); }
-        } anim();
-    }
-
-    function showFinal() {
-        document.getElementById('main-ui').innerHTML = `<div style="margin-top:100px; padding: 20px; animation: pop 0.6s ease-out;"><div style="font-size: 80px; margin-bottom: 20px;">🏆</div><h1 style="color:var(--primary); line-height: 1.2;">Congratulation,<br>Mission completed!</h1><h2 style="color:#fff; opacity:0.8;">功課完成，上傳成功！</h2><button class="btn btn-primary" onclick="location.reload()" style="margin-top: 40px; width: 220px;">回主畫面</button></div>`;
+        document.getElementById('main-ui').innerHTML = `
+            <div style="margin-top:100px;">
+                <div style="font-size: 80px;">🏆</div>
+                <h1 style="color:var(--primary);">太棒了！</h1>
+                <p>你已經完成了所有練習。</p>
+                <button class="btn btn-primary" onclick="location.reload()" style="width:200px;">回主畫面</button>
+            </div>`;
     }
 </script>
 </body>
